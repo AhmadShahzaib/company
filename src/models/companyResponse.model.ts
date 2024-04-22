@@ -1,6 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import CompanyDocument from 'mongoDb/document/Company.document';
 import { TimeZone } from './timeZone.model';
+import { Documents } from 'mongoDb/document/Company.document';
+
 
 export class CompaniesResponse {
   @ApiProperty()
@@ -23,6 +25,7 @@ export class CompaniesResponse {
 
   @ApiProperty()
   phoneNumber?: string;
+  companyProfile?: Documents;
 
   @ApiProperty()
   usdot?: string;
@@ -34,6 +37,8 @@ export class CompaniesResponse {
     this.timeZone = companyDocument.timeZone;
     this.email = companyDocument.email;
     this.phoneNumber = companyDocument.phoneNumber;
+    this.companyProfile = companyDocument.companyProfile;
+
     this.contactPerson = companyDocument.contactPerson;
     this.usdot = companyDocument.usdot;
   }

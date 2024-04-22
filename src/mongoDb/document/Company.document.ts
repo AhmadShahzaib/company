@@ -11,7 +11,7 @@ export default interface PermissionDocument extends Document {
   usdot: string;
   name: string;
   address: string;
-  driverProfile?: Documents;
+  companyProfile?: Documents;
   documents?: Documents[];
   timeZone: {
     id: number;

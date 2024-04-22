@@ -31,6 +31,8 @@ import { FilterQuery } from 'mongoose';
 import { addAndUpdate } from 'shared/addAndUpdate';
 import { ClientProxy, MessagePattern } from '@nestjs/microservices';
 import { uploadDocument } from './utils/upload';
+import { getDocuments } from 'utils/getDocuments';
+
 import { firstValueFrom } from 'rxjs';
 @Controller('Companies')
 @ApiTags('Companies')
@@ -97,7 +99,6 @@ export class CompaniesController extends BaseController {
           ],
         };
 
-
         let requestModel = await uploadDocument(
           files?.userDocument,
           files?.profile,
@@ -107,7 +108,7 @@ export class CompaniesController extends BaseController {
         );
         const companyRequest = await addAndUpdate(
           this.companiesService,
-          editCompanyRequestData,
+          requestModel,
           options,
         );
 
@@ -115,10 +116,11 @@ export class CompaniesController extends BaseController {
           id,
           companyRequest,
         );
+        let result : CompaniesResponse = await getDocuments(updatedCompany, this.companiesService);
         if (updatedCompany) {
-          const result: CompaniesResponse = new CompaniesResponse(
-            updatedCompany,
-          );
+        //   const result: CompaniesResponse = new CompaniesResponse(
+        //     model
+        //   );
           response.status(200).send({
             message: 'Company has been updated successfully',
             data: result,
