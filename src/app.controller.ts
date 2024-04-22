@@ -155,9 +155,11 @@ export class CompaniesController extends BaseController {
         const company = await this.companiesService.findCompanyById(id);
         if (company) {
           const companyResp: CompaniesResponse = new CompaniesResponse(company);
+        let result : CompaniesResponse = await getDocuments(companyResp, this.companiesService);
+
           return {
             message: 'Company Found',
-            data: companyResp,
+            data: result,
           };
         } else {
           throw new NotFoundException(`No company found with the id ${id}`);
