@@ -1,5 +1,9 @@
 import { Document } from 'mongoose';
-
+export type Documents = {
+  name?: string;
+  date?: number;
+  key?: string;
+};
 export default interface PermissionDocument extends Document {
   email: string;
   phoneNumber: string;
@@ -7,6 +11,8 @@ export default interface PermissionDocument extends Document {
   usdot: string;
   name: string;
   address: string;
+  driverProfile?: Documents;
+  documents?: Documents[];
   timeZone: {
     id: number;
     tzCode: string;
