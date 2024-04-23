@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsNotEmpty, IsString, MaxLength } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString, MaxLength ,IsOptional} from 'class-validator';
 import { TimeZone } from './timeZone.model';
 import { Documents } from 'mongoDb/document/Company.document';
 
@@ -24,6 +24,7 @@ export class CompaniesRequest {
   timeZone?: TimeZone | String;
 
   @ApiProperty()
+  @IsOptional()
   @IsString()
   contactPerson?: string;
 
