@@ -6,6 +6,7 @@ import { CompanySchema } from './mongoDb/schema/Company.schema';
 import { CompaniesController } from './app.controller';
 import { ClientProxyFactory, Transport } from '@nestjs/microservices';
 import { addController } from 'company.controller';
+import AwsClient from 'utils/config';
 
 @Module({
   imports: [
@@ -23,7 +24,8 @@ import { addController } from 'company.controller';
     ]),
   ],
   controllers: [CompaniesController,addController],
-  providers: [ConfigurationService, CompaniesService, {
+    
+    providers: [ConfigurationService, AwsClient,CompaniesService, {
     provide: 'USER_SERVICE',
     useFactory: (config: ConfigurationService) => {
       const inspectServicePort = config.get('USER_MICROSERVICE_PORT');

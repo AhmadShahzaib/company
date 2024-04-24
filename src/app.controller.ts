@@ -11,6 +11,7 @@ import {
   NotFoundException,
   Req,
   HttpStatus,
+  UploadedFiles,
   UseInterceptors,
   Inject,
 } from '@nestjs/common';
@@ -23,11 +24,15 @@ import {
   MessagePatternResponseInterceptor,
   MongoIdValidationPipe,
 } from '@shafiqrathore/logeld-tenantbackend-common-future';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import GetCompanyDecorators from 'decorators/getCompanyProfile';
 import AddDecorators from 'decorators/add';
 import { FilterQuery } from 'mongoose';
 import { addAndUpdate } from 'shared/addAndUpdate';
 import { ClientProxy, MessagePattern } from '@nestjs/microservices';
+import { uploadDocument } from './utils/upload';
+import { getDocuments } from 'utils/getDocuments';
+
 import { firstValueFrom } from 'rxjs';
 @Controller('Companies')
 @ApiTags('Companies')
@@ -55,8 +60,19 @@ export class CompaniesController extends BaseController {
   }
   // @------------------- Edit Company API controller -------------------
   @EditCompanyDecorators()
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      { name: 'userDocument', maxCount: 10 },
+      { name: 'profile', maxCount: 1 },
+    ]),
+  )
   async update(
     @Body() editCompanyRequestData: CompaniesRequest,
+    @UploadedFiles()
+    files: {
+      userDocument: Express.Multer.File[];
+      profile: Express.Multer.File;
+    },
     @Res() response: Response,
     @Req() request: Request,
   ) {
@@ -65,8 +81,8 @@ export class CompaniesController extends BaseController {
         request.originalUrl
       } by: ${request.user ?? 'Unauthorized User'}`,
     );
-    const { tenantId: id } = request.user ?? ({ tenantId: undefined } as any);
     try {
+      const { tenantId: id } = request.user ?? ({ tenantId: undefined } as any);
       if (id) {
         const { name, email, usdot, phoneNumber } = editCompanyRequestData;
         const options: FilterQuery<CompanyDocument> = {
@@ -82,9 +98,17 @@ export class CompaniesController extends BaseController {
             },
           ],
         };
-        const companyRequest = await addAndUpdate(
+
+        let requestModel = await uploadDocument(
+          files?.userDocument,
+          files?.profile,
           this.companiesService,
           editCompanyRequestData,
+          id,
+        );
+        const companyRequest = await addAndUpdate(
+          this.companiesService,
+          requestModel,
           options,
         );
 
@@ -92,10 +116,11 @@ export class CompaniesController extends BaseController {
           id,
           companyRequest,
         );
+        let result : CompaniesResponse = await getDocuments(updatedCompany, this.companiesService);
         if (updatedCompany) {
-          const result: CompaniesResponse = new CompaniesResponse(
-            updatedCompany,
-          );
+        //   const result: CompaniesResponse = new CompaniesResponse(
+        //     model
+        //   );
           response.status(200).send({
             message: 'Company has been updated successfully',
             data: result,
@@ -112,7 +137,7 @@ export class CompaniesController extends BaseController {
       }
       Logger.log('Error Logged in update of Company Controller');
       Logger.error({ message: error.message, stack: error.stack });
-      Logger.log({ id, ...editCompanyRequestData });
+      // Logger.log({ id, ...editCompanyRequestData });
       throw new InternalServerErrorException('Error while updating Company');
     }
   }
@@ -130,9 +155,11 @@ export class CompaniesController extends BaseController {
         const company = await this.companiesService.findCompanyById(id);
         if (company) {
           const companyResp: CompaniesResponse = new CompaniesResponse(company);
+        let result : CompaniesResponse = await getDocuments(companyResp, this.companiesService);
+
           return {
             message: 'Company Found',
-            data: companyResp,
+            data: result,
           };
         } else {
           throw new NotFoundException(`No company found with the id ${id}`);
