@@ -1,4 +1,5 @@
 import CompanyDocument from 'mongoDb/document/Company.document';
+import DemoDocument from 'mongoDb/document/Demo.document';
 import { CompaniesRequest, CompaniesResponse } from './models';
 import { CompaniesService } from './app.service';
 import {
@@ -27,8 +28,12 @@ import {
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import GetCompanyDecorators from 'decorators/getCompanyProfile';
 import AddDecorators from 'decorators/add';
+import RequestDemoDecorators from 'decorators/requestDemo';
+
 import { FilterQuery } from 'mongoose';
 import { addAndUpdate } from 'shared/addAndUpdate';
+import { validateDemo } from 'shared/validateDemo';
+
 import { ClientProxy, MessagePattern } from '@nestjs/microservices';
 import { uploadDocument } from './utils/upload';
 import { getDocuments } from 'utils/getDocuments';
@@ -177,7 +182,56 @@ export class CompaniesController extends BaseController {
       throw new InternalServerErrorException('Error while updating Company');
     }
   }
+@RequestDemoDecorators()
+async requestDemo(@Body() requestModel, @Res() response: Response) {
+  try {
+    const {
+      state,
+      companyName,
+      country,
+      address,
+      firstName,
+      lastName,
+      password,
+      userDetails,
+      email,
+      usdot,
+      phoneNumber,
+    } = requestModel;
+    let name = companyName;
+    const options: FilterQuery<DemoDocument> = {
+      $and: [{ isDeleted: false }],
+      $or: [
+        { name: { $regex: new RegExp(`^${name}`, 'i') } },
+        { email: { $regex: new RegExp(`^${email}`, 'i') } },
+        { usdot: { $regex: new RegExp(`^${usdot}`, 'i') } },
+        { phoneNumber: { $regex: new RegExp(`^${phoneNumber}`, 'i') } },
+      ],
+    };
+    //633d27619abbb80ad0ec512a role id
+    requestModel.name = name;
+    const companyRequest = await validateDemo(
+      this.companiesService,
+      requestModel,
+      options,
+    );
+    const result = await this.companiesService.addDemo(companyRequest);
 
+   
+    response.status(HttpStatus.CREATED).send({
+      message: 'Demo Request has been created successfully',
+      data: result,
+    });
+  } catch (error) {
+    if (error instanceof HttpException) {
+      throw error;
+    } else {
+      Logger.log('Error Logged in addCompany of Company Controller');
+      Logger.error(error.message, error.stack);
+      Logger.log(requestModel);
+      throw new InternalServerErrorException('Error while creating company');
+    }
+  }}
   @AddDecorators()
   async addUsers(@Body() companyModel, @Res() response: Response) {
     try {
@@ -194,7 +248,7 @@ export class CompaniesController extends BaseController {
         phoneNumber,
       } = companyModel;
       let name = companyName;
-      const options: FilterQuery<CompanyDocument> = {
+      const options: FilterQuery<DemoDocument> = {
         $and: [{ isDeleted: false }],
         $or: [
           { name: { $regex: new RegExp(`^${name}`, 'i') } },

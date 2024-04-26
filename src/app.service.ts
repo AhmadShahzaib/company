@@ -1,4 +1,5 @@
 import CompanyDocument from 'mongoDb/document/Company.document';
+import DemoDocument from 'mongoDb/document/Demo.document';
 import { Model, Schema, FilterQuery } from 'mongoose';
 import { Injectable, Logger } from '@nestjs/common';
 import { BaseService } from '@shafiqrathore/logeld-tenantbackend-common-future';
@@ -16,6 +17,8 @@ export class CompaniesService extends BaseService<CompanyDocument> {
   constructor(
     @InjectModel('Companies')
     private readonly companyModel: Model<CompanyDocument>,
+    @InjectModel('Demo')
+    private readonly demoModel: Model<DemoDocument>,
     private readonly awsClient: AwsClient,
 
   ) {
@@ -52,6 +55,29 @@ export class CompaniesService extends BaseService<CompanyDocument> {
     }
   };
 
+
+  findOneDemo = async (option:FilterQuery<DemoDocument>): Promise<DemoDocument> => {
+    try {
+      const res= await this.demoModel.findOne(option);
+      return res;
+    } catch (error) {
+      Logger.error(error.message, error.stack);
+      throw error
+    }
+  };
+
+  //
+  //
+  addDemo = async (
+    data,
+  ): Promise<DemoDocument> => {
+    try {
+      return await this.demoModel.create(data);
+    } catch (error) {
+      Logger.error(error.message, error.stack);
+      throw error;
+    }
+  };
   ////
   //
   async uploadFile(fileBuffer: Base64, fileName: string, contentType: string) {

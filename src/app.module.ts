@@ -3,6 +3,8 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { CompaniesService } from './app.service';
 import { ConfigurationService, SharedModule } from '@shafiqrathore/logeld-tenantbackend-common-future';
 import { CompanySchema } from './mongoDb/schema/Company.schema';
+import { DemoSchema } from './mongoDb/schema/Demo.schema';
+
 import { CompaniesController } from './app.controller';
 import { ClientProxyFactory, Transport } from '@nestjs/microservices';
 import { addController } from 'company.controller';
@@ -21,6 +23,8 @@ import AwsClient from 'utils/config';
     }),
     MongooseModule.forFeature([
       { name: 'Companies', schema: CompanySchema },
+    ]), MongooseModule.forFeature([
+      { name: 'Demo', schema: DemoSchema },
     ]),
   ],
   controllers: [CompaniesController,addController],
