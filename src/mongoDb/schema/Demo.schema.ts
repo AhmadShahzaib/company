@@ -18,8 +18,12 @@ export const DemoSchema = new mongoose.Schema(
   {
     email: { type: String, required: true, index: true },
     phoneNumber: { type: String },
-
+    firstName: { type: String, required: true },
+    lastName: { type: String, required: true },
     usdot: { type: String, required: true },
+    companyName: { type: String, required: true },
+    state: { type: String },
+    country: { type: String, required: true },
     name: { type: String, required: true },
     address: { type: String, required: false },
     companyProfile: { type: Documents, required: false },

@@ -5,7 +5,6 @@ import {
   searchableAtrributes,
   sortableAttributes,
   searchableIds,
-
 } from './models';
 import {
   ListingParams,
@@ -31,6 +30,8 @@ import { ApiTags } from '@nestjs/swagger';
 
 import { Response, Request } from 'express';
 import EditCompanyDecorators from './decorators/update';
+import EditDemoDecorators from './decorators/updateDemo';
+
 import timezones from 'timezones-list';
 import {
   BaseController,
@@ -44,7 +45,7 @@ import GetDemoDecorators from 'decorators/getDemos';
 import AddDecorators from 'decorators/add';
 import RequestDemoDecorators from 'decorators/requestDemo';
 
-import { FilterQuery ,Types} from 'mongoose';
+import { FilterQuery, Types } from 'mongoose';
 import { addAndUpdate } from 'shared/addAndUpdate';
 import { validateDemo } from 'shared/validateDemo';
 
@@ -163,7 +164,115 @@ export class CompaniesController extends BaseController {
       throw new InternalServerErrorException('Error while updating Company');
     }
   }
+  // @------------------- Edit Demo API controller -------------------
+  @EditDemoDecorators()
+  async updateDemo(
+    @Body() editDemoRequestData,
 
+    @Res() response: Response,
+    @Req() request: Request,
+  ) {
+    Logger.log(
+      `${request.method} request received from ${request.ip} for endpoint ${
+        request.originalUrl
+      } by: ${request.user ?? 'Unauthorized User'}`,
+    );
+    try {
+      const { id } = editDemoRequestData;
+      if (id) {
+        const Demo = await this.companiesService.findDemoById(id);
+        let companyModel: any = JSON.stringify(Demo);
+        companyModel = JSON.parse(companyModel);
+        if (editDemoRequestData.status == 'approved') {
+          const {
+            state,
+            companyName,
+            country,
+            address,
+            firstName,
+            lastName,
+            // password,
+            email,
+            usdot,
+            phoneNumber,
+          } = companyModel;
+          let name = companyName;
+          const options: FilterQuery<DemoDocument> = {
+            $and: [{ isDeleted: false }],
+            $or: [
+              { name: { $regex: new RegExp(`^${name}`, 'i') } },
+              { email: { $regex: new RegExp(`^${email}`, 'i') } },
+              { usdot: { $regex: new RegExp(`^${usdot}`, 'i') } },
+              { phoneNumber: { $regex: new RegExp(`^${phoneNumber}`, 'i') } },
+            ],
+          };
+          //633d27619abbb80ad0ec512a role id
+          companyModel.name = name;
+          const companyRequest = await addAndUpdate(
+            this.companiesService,
+            companyModel,
+            options,
+          );
+          const result: CompaniesResponse = new CompaniesResponse(
+            await this.companiesService.addCompany(companyRequest),
+          );
+          const userPayLoad = {
+            tenantId: result.id,
+            email: email,
+            password: '12345678',
+            userName: firstName + ' ' + lastName,
+            firstName: firstName,
+            lastName: lastName,
+            timeZone: companyModel.timeZone,
+            phoneNumber: phoneNumber,
+            role: '633d27619abbb80ad0ec512a',
+            deviceId: '62285461da81e8f6edb90775',
+          };
+          const superUser = await firstValueFrom(
+            this.userService.send({ cmd: 'add_user' }, userPayLoad),
+          );
+          const officePayload = {
+            name: companyName,
+            address: address,
+            phoneNumber: phoneNumber,
+            tenantId: result.id,
+            isHeadOffice: true,
+            timeZone: companyModel.timeZone,
+            country: country,
+            state: state,
+            city: companyModel.timeZone.tzCode.split('/')[1],
+            isActive: true,
+          };
+          const superOffice = await firstValueFrom(
+            this.officeService.send({ cmd: 'office' }, officePayload),
+          );
+          response.status(HttpStatus.CREATED).send({
+            message: 'Company has been created successfully',
+            data: result,
+          });
+        }
+        else if (editDemoRequestData.status != 'approved'){
+          
+          const updatedDemo = await this.companiesService.updateDemo(
+            id,
+            editDemoRequestData,
+          );
+          response.status(HttpStatus.CREATED).send({
+            message: 'Demo  has been updated successfully',
+            data: updatedDemo,
+          });
+        }
+      }
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      Logger.log('Error Logged in update of Company Controller');
+      Logger.error({ message: error.message, stack: error.stack });
+      // Logger.log({ id, ...editCompanyRequestData });
+      throw new InternalServerErrorException('Error while updating Company');
+    }
+  }
   @GetCompanyDecorators()
   async getCompanyProfile(@Req() request: Request) {
     Logger.log(
@@ -228,30 +337,28 @@ export class CompaniesController extends BaseController {
         searchableAtrributes.forEach((attribute) => {
           options['$or'].push({ [attribute]: new RegExp(search, 'i') });
         });
-       
       }
-      const query = await this.companiesService.getDemos(options,queryParams);
+      const query = await this.companiesService.getDemos(options, queryParams);
       // if (orderBy && sortableAttributes.includes(orderBy)) {
       //   query.collation({ locale: 'en' }).sort({ [orderBy]: orderType ?? 1 });
       // } else {
       //   query.sort();
       // }
-    
+
       let total = Object.keys(query).length;
-        return {
-          message: 'Company Found',
-          data: query,
-          total,
-          pageNo: pageNo ?? 1,
-          last_page: Math.ceil(
-            total /
-              (limit && limit.toString().toLowerCase() === 'all'
-                ? total
-                : limit ?? 10),
-          ),
-        };
-      } 
-     catch (error) {
+      return {
+        message: 'Company Found',
+        data: query,
+        total,
+        pageNo: pageNo ?? 1,
+        last_page: Math.ceil(
+          total /
+            (limit && limit.toString().toLowerCase() === 'all'
+              ? total
+              : limit ?? 10),
+        ),
+      };
+    } catch (error) {
       if (error instanceof HttpException) {
         throw error;
       }

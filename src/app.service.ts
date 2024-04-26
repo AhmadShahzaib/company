@@ -70,7 +70,27 @@ export class CompaniesService extends BaseService<CompanyDocument> {
       throw error
     }
   };
-
+//
+updateDemo = async (
+  id: string,
+  editCompanyRequestData,
+): Promise<DemoDocument> => {
+  try {
+    return await this.demoModel.findByIdAndUpdate(
+      id,
+      editCompanyRequestData,
+      {
+        new: true,
+      },
+    );
+  } catch (error) {
+    Logger.log('Error logged in update demo of Company service');
+    Logger.error({ message: error.message, stack: error.stack });
+    Logger.log({ id, editCompanyRequestData });
+    throw error;
+  }
+};
+//
   //
   //
   addDemo = async (
@@ -154,13 +174,22 @@ export class CompaniesService extends BaseService<CompanyDocument> {
   
       return query;
     } catch (error) {
-      Logger.log(`Error Logged in findCompanyById of Company Service`);
+      Logger.log(`Error Logged in findDemo of Company Service`);
       Logger.error({ message: error.message, stack: error.stack });
   
       throw error;
     }
   };
-  
+  findDemoById = async (id) => {
+    try {
+      return await this.demoModel.findById(id).lean();
+    } catch (error) {
+      Logger.log(`Error Logged in findDemoById of Company Service`);
+      Logger.error({ message: error.message, stack: error.stack });
+      Logger.log({ id });
+      throw error;
+    }
+  };
   findCompanyById = async (id) => {
     try {
       return await this.companyModel.findById(id, { isDeleted: false });
