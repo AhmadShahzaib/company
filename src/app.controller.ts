@@ -1,6 +1,16 @@
 import CompanyDocument from 'mongoDb/document/Company.document';
 import DemoDocument from 'mongoDb/document/Demo.document';
 import { CompaniesRequest, CompaniesResponse } from './models';
+import {
+  searchableAtrributes,
+  sortableAttributes,
+  searchableIds,
+
+} from './models';
+import {
+  ListingParams,
+  ListingParamsValidationPipe,
+} from '@shafiqrathore/logeld-tenantbackend-common-future';
 import { CompaniesService } from './app.service';
 import {
   Controller,
@@ -11,12 +21,14 @@ import {
   Logger,
   NotFoundException,
   Req,
+  Query,
   HttpStatus,
   UploadedFiles,
   UseInterceptors,
   Inject,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+
 import { Response, Request } from 'express';
 import EditCompanyDecorators from './decorators/update';
 import timezones from 'timezones-list';
@@ -27,10 +39,12 @@ import {
 } from '@shafiqrathore/logeld-tenantbackend-common-future';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import GetCompanyDecorators from 'decorators/getCompanyProfile';
+import GetDemoDecorators from 'decorators/getDemos';
+
 import AddDecorators from 'decorators/add';
 import RequestDemoDecorators from 'decorators/requestDemo';
 
-import { FilterQuery } from 'mongoose';
+import { FilterQuery ,Types} from 'mongoose';
 import { addAndUpdate } from 'shared/addAndUpdate';
 import { validateDemo } from 'shared/validateDemo';
 
@@ -121,11 +135,14 @@ export class CompaniesController extends BaseController {
           id,
           companyRequest,
         );
-        let result : CompaniesResponse = await getDocuments(updatedCompany, this.companiesService);
+        let result: CompaniesResponse = await getDocuments(
+          updatedCompany,
+          this.companiesService,
+        );
         if (updatedCompany) {
-        //   const result: CompaniesResponse = new CompaniesResponse(
-        //     model
-        //   );
+          //   const result: CompaniesResponse = new CompaniesResponse(
+          //     model
+          //   );
           response.status(200).send({
             message: 'Company has been updated successfully',
             data: result,
@@ -160,7 +177,10 @@ export class CompaniesController extends BaseController {
         const company = await this.companiesService.findCompanyById(id);
         if (company) {
           const companyResp: CompaniesResponse = new CompaniesResponse(company);
-        let result : CompaniesResponse = await getDocuments(companyResp, this.companiesService);
+          let result: CompaniesResponse = await getDocuments(
+            companyResp,
+            this.companiesService,
+          );
 
           return {
             message: 'Company Found',
@@ -182,56 +202,115 @@ export class CompaniesController extends BaseController {
       throw new InternalServerErrorException('Error while updating Company');
     }
   }
-@RequestDemoDecorators()
-async requestDemo(@Body() requestModel, @Res() response: Response) {
-  try {
-    const {
-      state,
-      companyName,
-      country,
-      address,
-      firstName,
-      lastName,
-      password,
-      userDetails,
-      email,
-      usdot,
-      phoneNumber,
-    } = requestModel;
-    let name = companyName;
-    const options: FilterQuery<DemoDocument> = {
-      $and: [{ isDeleted: false }],
-      $or: [
-        { name: { $regex: new RegExp(`^${name}`, 'i') } },
-        { email: { $regex: new RegExp(`^${email}`, 'i') } },
-        { usdot: { $regex: new RegExp(`^${usdot}`, 'i') } },
-        { phoneNumber: { $regex: new RegExp(`^${phoneNumber}`, 'i') } },
-      ],
-    };
-    //633d27619abbb80ad0ec512a role id
-    requestModel.name = name;
-    const companyRequest = await validateDemo(
-      this.companiesService,
-      requestModel,
-      options,
-    );
-    const result = await this.companiesService.addDemo(companyRequest);
 
-   
-    response.status(HttpStatus.CREATED).send({
-      message: 'Demo Request has been created successfully',
-      data: result,
-    });
-  } catch (error) {
-    if (error instanceof HttpException) {
-      throw error;
-    } else {
-      Logger.log('Error Logged in addCompany of Company Controller');
-      Logger.error(error.message, error.stack);
-      Logger.log(requestModel);
-      throw new InternalServerErrorException('Error while creating company');
+  @GetDemoDecorators()
+  async getAlldemo(
+    @Query(new ListingParamsValidationPipe()) queryParams: ListingParams,
+    @Req() request: Request,
+  ) {
+    Logger.log(
+      `${request.method} request received from ${request.ip} for ${
+        request.originalUrl
+      } by: ${request.user ?? 'Unauthorized User'}`,
+    );
+    let { search, orderBy, orderType, pageNo, limit } = queryParams;
+    const { tenantId: id } = request.user ?? ({ tenantId: undefined } as any);
+    try {
+      const options: FilterQuery<DemoDocument> = {};
+
+      if (search) {
+        options['$or'] = [];
+        if (Types.ObjectId.isValid(search)) {
+          searchableIds.forEach((attribute) => {
+            options['$or'].push({ [attribute]: new RegExp(search, 'i') });
+          });
+        }
+        searchableAtrributes.forEach((attribute) => {
+          options['$or'].push({ [attribute]: new RegExp(search, 'i') });
+        });
+       
+      }
+      const query = await this.companiesService.getDemos(options,queryParams);
+      // if (orderBy && sortableAttributes.includes(orderBy)) {
+      //   query.collation({ locale: 'en' }).sort({ [orderBy]: orderType ?? 1 });
+      // } else {
+      //   query.sort();
+      // }
+    
+      let total = Object.keys(query).length;
+        return {
+          message: 'Company Found',
+          data: query,
+          total,
+          pageNo: pageNo ?? 1,
+          last_page: Math.ceil(
+            total /
+              (limit && limit.toString().toLowerCase() === 'all'
+                ? total
+                : limit ?? 10),
+          ),
+        };
+      } 
+     catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      Logger.log('Error Logged in update of Company Controller');
+      Logger.error({ message: error.message, stack: error.stack });
+      Logger.log({ id });
+      throw new InternalServerErrorException('Error while updating Company');
     }
-  }}
+  }
+  @RequestDemoDecorators()
+  async requestDemo(@Body() requestModel, @Res() response: Response) {
+    try {
+      const {
+        state,
+        companyName,
+        country,
+        address,
+        firstName,
+        lastName,
+        password,
+        userDetails,
+        email,
+        usdot,
+        phoneNumber,
+      } = requestModel;
+      let name = companyName;
+      const options: FilterQuery<DemoDocument> = {
+        $and: [{ isDeleted: false }],
+        $or: [
+          { name: { $regex: new RegExp(`^${name}`, 'i') } },
+          { email: { $regex: new RegExp(`^${email}`, 'i') } },
+          { usdot: { $regex: new RegExp(`^${usdot}`, 'i') } },
+          { phoneNumber: { $regex: new RegExp(`^${phoneNumber}`, 'i') } },
+        ],
+      };
+      //633d27619abbb80ad0ec512a role id
+      requestModel.name = name;
+      const companyRequest = await validateDemo(
+        this.companiesService,
+        requestModel,
+        options,
+      );
+      const result = await this.companiesService.addDemo(companyRequest);
+
+      response.status(HttpStatus.CREATED).send({
+        message: 'Demo Request has been created successfully',
+        data: result,
+      });
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      } else {
+        Logger.log('Error Logged in addCompany of Company Controller');
+        Logger.error(error.message, error.stack);
+        Logger.log(requestModel);
+        throw new InternalServerErrorException('Error while creating company');
+      }
+    }
+  }
   @AddDecorators()
   async addUsers(@Body() companyModel, @Res() response: Response) {
     try {

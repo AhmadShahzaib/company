@@ -11,23 +11,23 @@ export const validateDemo = async (
   vehicleId: string = null,
  ) => {
   try {
-    const company = await companyService.findOneDemo(option);
-    if (company?.email.toLowerCase() == requestModel.email.toLowerCase()) {
-      Logger.log(`Email already exists`);
-      throw new ConflictException(`Email already exists`);
-    }
-    if (company?.name.toLowerCase() == requestModel.name.toLowerCase()) {
-      Logger.log(`Company name already exists`);
-      throw new ConflictException(`Company name already exists`);
-    }
-    if (company?.phoneNumber == requestModel.phoneNumber) {
-      Logger.log(`${requestModel.phoneNumber} Phone number already exists`);
-      throw new ConflictException(`Phone number already exists`);
-    }
-    if (company?.usdot == requestModel.usdot) {
-      Logger.log(`Usdot already exists`);
-      throw new ConflictException(`Usdot already exists`);
-    }
+    // const company = await companyService.findOneDemo(option);
+    // if (company?.email.toLowerCase() == requestModel.email.toLowerCase()) {
+    //   Logger.log(`Email already exists`);
+    //   throw new ConflictException(`Email already exists`);
+    // }
+    // if (company?.name.toLowerCase() == requestModel.name.toLowerCase()) {
+    //   Logger.log(`Company name already exists`);
+    //   throw new ConflictException(`Company name already exists`);
+    // }
+    // if (company?.phoneNumber == requestModel.phoneNumber) {
+    //   Logger.log(`${requestModel.phoneNumber} Phone number already exists`);
+    //   throw new ConflictException(`Phone number already exists`);
+    // }
+    // if (company?.usdot == requestModel.usdot) {
+    //   Logger.log(`Usdot already exists`);
+    //   throw new ConflictException(`Usdot already exists`);
+    // }
     const index = timezones.findIndex((ele) => {
       return ele.tzCode === (requestModel.timeZone as string);
     });

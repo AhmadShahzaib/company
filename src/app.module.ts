@@ -12,7 +12,11 @@ import AwsClient from 'utils/config';
 
 @Module({
   imports: [
-    SharedModule,
+    SharedModule, MongooseModule.forFeature([
+      { name: 'Demo', schema: DemoSchema },
+    ]), MongooseModule.forFeature([
+      { name: 'Companies', schema: CompanySchema },
+    ]),
     MongooseModule.forRootAsync({
       useFactory: async (configService: ConfigurationService) => ({
         uri: configService.mongoUri,
@@ -21,11 +25,7 @@ import AwsClient from 'utils/config';
       }),
       inject: [ConfigurationService],
     }),
-    MongooseModule.forFeature([
-      { name: 'Companies', schema: CompanySchema },
-    ]), MongooseModule.forFeature([
-      { name: 'Demo', schema: DemoSchema },
-    ]),
+  
   ],
   controllers: [CompaniesController,addController],
     

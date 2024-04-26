@@ -9,25 +9,23 @@ const TimeZoneSchema = new mongoose.Schema(
   },
   { _id: false },
 );
-const Documents = new mongoose.Schema(
-  {
-    name: { type: String, required: true },
-    key: { type: String, required: true },
-    date: { type: Number, required: true },
-  },
-  
-);
+const Documents = new mongoose.Schema({
+  name: { type: String, required: true },
+  key: { type: String, required: true },
+  date: { type: Number, required: true },
+});
 export const DemoSchema = new mongoose.Schema(
   {
     email: { type: String, required: true, index: true },
     phoneNumber: { type: String },
-   
+
     usdot: { type: String, required: true },
     name: { type: String, required: true },
     address: { type: String, required: false },
-  companyProfile: { type: Documents, required: false },
-
-   userDetails : { type:{},required: true },
+    companyProfile: { type: Documents, required: false },
+    status: { type: String, required: true },
+    comments: { type: String, required: false },
+    userDetails: { type: {}, required: true },
     timeZone: { type: TimeZoneSchema, required: true },
     isDeleted: { type: Boolean, default: false },
   },

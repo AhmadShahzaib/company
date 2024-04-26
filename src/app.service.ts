@@ -7,7 +7,12 @@ import { InjectModel } from '@nestjs/mongoose';
 import { CompaniesRequest } from './models';
 import AwsClient from './utils/config';
 import { Base64 } from 'aws-sdk/clients/ecr';
+import {
+ 
+  sortableAttributes,
+ 
 
+} from './models';
 
 @Injectable()
 export class CompaniesService extends BaseService<CompanyDocument> {
@@ -131,7 +136,31 @@ export class CompaniesService extends BaseService<CompanyDocument> {
       throw error;
     }
   };
-
+  getDemos = async (options, queryParams): Promise<DemoDocument[]> => {
+    try {
+      const { search, orderBy, orderType, pageNo, limit } = queryParams;
+  
+      let query = this.demoModel.find(options);
+  
+      // Apply sorting if orderBy is provided
+      // if (orderBy && sortableAttributes.includes(orderBy)) {
+      //   query.sort(orderBy);
+      // }
+  
+      // Apply pagination
+      if (!limit || !isNaN(limit)) {
+        query = query.skip(((pageNo ?? 1) - 1) * (limit ?? 10)).limit(limit ?? 10);
+      }
+  
+      return query;
+    } catch (error) {
+      Logger.log(`Error Logged in findCompanyById of Company Service`);
+      Logger.error({ message: error.message, stack: error.stack });
+  
+      throw error;
+    }
+  };
+  
   findCompanyById = async (id) => {
     try {
       return await this.companyModel.findById(id, { isDeleted: false });

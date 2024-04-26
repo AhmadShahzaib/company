@@ -13,7 +13,8 @@ export default interface DemoDocument extends Document {
   address: string;
   companyProfile?: Documents;
   userDetails : {};
-
+  status: string;
+  comments?:  string;
   documents?: Documents[];
   timeZone: {
     id: number;
