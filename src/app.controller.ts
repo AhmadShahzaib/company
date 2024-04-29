@@ -180,9 +180,7 @@ export class CompaniesController extends BaseController {
     );
     try {
       const { id } = editDemoRequestData;
-      const superUser = await firstValueFrom(
-        this.userService.send({ cmd: 'send_email' }, {}),
-      );
+     
       if (id) {
         const Demo = await this.companiesService.findDemoById(id);
         let companyModel: any = JSON.stringify(Demo);
@@ -233,9 +231,12 @@ export class CompaniesController extends BaseController {
             role: '633d27619abbb80ad0ec512a',
             deviceId: '62285461da81e8f6edb90775',
           };
-          // const superUser = await firstValueFrom(
-          //   this.authService.send({ cmd: 'add_user' }, userPayLoad),
-          // );
+          const superUser = await firstValueFrom(
+            this.authService.send({ cmd: 'add_user' }, userPayLoad),
+          );
+          const emailSent = await firstValueFrom(
+            this.userService.send({ cmd: 'send_email' }, userPayLoad),
+          );
           const officePayload = {
             name: companyName,
             address: address,
@@ -255,9 +256,7 @@ export class CompaniesController extends BaseController {
             message: 'Company has been created successfully',
             data: result,
           });
-        }
-        else if (editDemoRequestData.status != 'approved'){
-          
+        } else if (editDemoRequestData.status != 'approved') {
           const updatedDemo = await this.companiesService.updateDemo(
             id,
             editDemoRequestData,
@@ -423,6 +422,8 @@ export class CompaniesController extends BaseController {
       }
     }
   }
+
+  //not functional
   @AddDecorators()
   async addUsers(@Body() companyModel, @Res() response: Response) {
     try {
