@@ -61,6 +61,22 @@ import AwsClient from 'utils/config';
     },
     inject: [ConfigurationService],
   },
+  {
+    provide: 'AUTH_SERVICE',
+    useFactory: (config: ConfigurationService) => {
+      const inspectServicePort = config.get('AUTH_MICROSERVICE_PORT');
+      const inspectServiceHost = config.get('AUTH_MICROSERVICE_HOST');
+
+      return ClientProxyFactory.create({
+        transport: Transport.TCP,
+        options: {
+          port: Number(inspectServicePort),
+          host: inspectServiceHost,
+        },
+      });
+    },
+    inject: [ConfigurationService],
+  },
 ],
 })
 

@@ -16,17 +16,17 @@ import { CompaniesResponse } from '../models/companyResponse.model';
 
 export default function RequestDemoDecorators() {
   const RequestDemoDecorators: Array<CombineDecoratorType> = [
-    Post('requestDemo'),
-    // ApiBearerAuth("access-token"),
+    Post('requestDemoNotWorking'),
+ 
     ApiResponse({ status: HttpStatus.CREATED, type: CompaniesResponse }),
-    ApiResponse({
-      status: HttpStatus.FORBIDDEN,
-      type: ForbiddenException,
-      description:
-        'Either the token does not exist or the token was compromised',
-    }),
-    ApiResponse({ status: HttpStatus.CONFLICT, type: ConflictException }),
-    ApiOperation(GetOperationId('Companies', 'Add')),
+    // ApiResponse({
+    //   status: HttpStatus.FORBIDDEN,
+    //   type: ForbiddenException,
+    //   description:
+    //     'Either the token does not exist or the token was compromised',
+    // }),
+    // ApiResponse({ status: HttpStatus.CONFLICT, type: ConflictException }),
+  
   ];
   return CombineDecorators(RequestDemoDecorators);
 }
