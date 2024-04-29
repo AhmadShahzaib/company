@@ -210,6 +210,8 @@ export class CompaniesController extends BaseController {
           };
           //633d27619abbb80ad0ec512a role id
           companyModel.name = name;
+          companyModel.timeZone= companyModel.timeZone.tzCode;
+
           const companyRequest = await addAndUpdate(
             this.companiesService,
             companyModel,
@@ -232,10 +234,10 @@ export class CompaniesController extends BaseController {
             deviceId: '62285461da81e8f6edb90775',
           };
           const superUser = await firstValueFrom(
-            this.authService.send({ cmd: 'add_user' }, userPayLoad),
+            this.userService.send({ cmd: 'add_user' }, userPayLoad),
           );
           const emailSent = await firstValueFrom(
-            this.userService.send({ cmd: 'send_email' }, userPayLoad),
+            this.authService.send({ cmd: 'send_email_welcome' }, userPayLoad),
           );
           const officePayload = {
             name: companyName,
