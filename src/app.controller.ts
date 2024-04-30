@@ -232,6 +232,7 @@ export class CompaniesController extends BaseController {
             firstName: firstName,
             lastName: lastName,
             timeZone: companyModel.timeZone,
+            isVerified:true,
             phoneNumber: phoneNumber,
             role: '633d27619abbb80ad0ec512a',
             deviceId: '62285461da81e8f6edb90775',
@@ -254,6 +255,7 @@ export class CompaniesController extends BaseController {
             timeZone: companyModel.timeZone,
             country: country,
             state: state,
+            
             city: companyModel.timeZone.tzCode.split('/')[1],
             isActive: true,
           };
