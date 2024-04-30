@@ -34,7 +34,6 @@ import { ClientProxy, MessagePattern } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 @Controller('Companies')
 @ApiTags('Companies')
-
 export class addController {
   constructor(
     private readonly companiesService: CompaniesService,
@@ -43,7 +42,7 @@ export class addController {
     @Inject('OFFICE_SERVICE') private readonly officeService: ClientProxy,
   ) {}
 
-@Post('/requestDemo')
+  @Post('/requestDemo')
   async requestDemo(@Body() requestModel, @Res() response: Response) {
     try {
       const {
@@ -77,10 +76,10 @@ export class addController {
         options,
       );
       const result = await this.companiesService.addDemo(companyRequest);
-      let userPayLoad= {}
- const emailSent = await firstValueFrom(
-            this.authService.send({ cmd: 'send_email_Confirmation' }, userPayLoad),
-          );
+      let userPayLoad = { email: email, firstName: firstName };
+      const emailSent = await firstValueFrom(
+        this.authService.send({ cmd: 'send_email_welcome' }, userPayLoad),
+      );
       response.status(HttpStatus.CREATED).send({
         message: 'Demo Request has been created successfully',
         data: result,
