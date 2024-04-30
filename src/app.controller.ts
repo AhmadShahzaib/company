@@ -236,9 +236,9 @@ export class CompaniesController extends BaseController {
           const superUser = await firstValueFrom(
             this.userService.send({ cmd: 'add_user' }, userPayLoad),
           );
-          const emailSent = await firstValueFrom(
-            this.authService.send({ cmd: 'send_email_welcome' }, userPayLoad),
-          );
+          // const emailSent = await firstValueFrom(
+          //   this.authService.send({ cmd: 'send_email_Confirmation' }, userPayLoad),
+          // );
           const officePayload = {
             name: companyName,
             address: address,
@@ -254,6 +254,10 @@ export class CompaniesController extends BaseController {
           const superOffice = await firstValueFrom(
             this.officeService.send({ cmd: 'office' }, officePayload),
           );
+          const updatedDemo = await this.companiesService.updateDemo(
+            id,
+            editDemoRequestData,
+          );
           response.status(HttpStatus.CREATED).send({
             message: 'Company has been created successfully',
             data: result,
@@ -264,7 +268,7 @@ export class CompaniesController extends BaseController {
             editDemoRequestData,
           );
           response.status(HttpStatus.CREATED).send({
-            message: 'Demo  has been updated successfully',
+            message: 'Inquiry has been updated successfully',
             data: updatedDemo,
           });
         }
