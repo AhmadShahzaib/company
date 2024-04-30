@@ -39,6 +39,7 @@ export class addController {
   constructor(
     private readonly companiesService: CompaniesService,
     @Inject('USER_SERVICE') private readonly userService: ClientProxy,
+    @Inject('AUTH_SERVICE') private readonly authService: ClientProxy,
     @Inject('OFFICE_SERVICE') private readonly officeService: ClientProxy,
   ) {}
 
@@ -76,7 +77,10 @@ export class addController {
         options,
       );
       const result = await this.companiesService.addDemo(companyRequest);
-
+      let userPayLoad= {}
+ const emailSent = await firstValueFrom(
+            this.authService.send({ cmd: 'send_email_Confirmation' }, userPayLoad),
+          );
       response.status(HttpStatus.CREATED).send({
         message: 'Demo Request has been created successfully',
         data: result,

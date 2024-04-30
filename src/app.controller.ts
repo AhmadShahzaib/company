@@ -237,7 +237,7 @@ export class CompaniesController extends BaseController {
             this.userService.send({ cmd: 'add_user' }, userPayLoad),
           );
           // const emailSent = await firstValueFrom(
-          //   this.authService.send({ cmd: 'send_email_Confirmation' }, userPayLoad),
+          //   this.authService.send({ cmd: 'send_email_Confirmation' }, userPayLoad),send_email_welcome
           // );
           const officePayload = {
             name: companyName,
