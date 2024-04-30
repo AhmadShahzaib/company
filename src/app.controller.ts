@@ -220,7 +220,9 @@ export class CompaniesController extends BaseController {
           const result: CompaniesResponse = new CompaniesResponse(
             await this.companiesService.addCompany(companyRequest),
           );
-          let password = editDemoRequestData.password;
+  
+
+          let password = editDemoRequestData.password ? editDemoRequestData.password : "12345678" ;
           const userPayLoad = {
             tenantId: result.id,
             email: email,
