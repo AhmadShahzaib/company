@@ -180,7 +180,7 @@ export class CompaniesController extends BaseController {
     );
     try {
       const { id } = editDemoRequestData;
-     
+
       if (id) {
         const Demo = await this.companiesService.findDemoById(id);
         let companyModel: any = JSON.stringify(Demo);
@@ -210,7 +210,7 @@ export class CompaniesController extends BaseController {
           };
           //633d27619abbb80ad0ec512a role id
           companyModel.name = name;
-          companyModel.timeZone= companyModel.timeZone.tzCode;
+          companyModel.timeZone = companyModel.timeZone.tzCode;
 
           const companyRequest = await addAndUpdate(
             this.companiesService,
@@ -220,9 +220,10 @@ export class CompaniesController extends BaseController {
           const result: CompaniesResponse = new CompaniesResponse(
             await this.companiesService.addCompany(companyRequest),
           );
-  
 
-          let password = editDemoRequestData.password ? editDemoRequestData.password : "12345678" ;
+          let password = editDemoRequestData.password
+            ? editDemoRequestData.password
+            : '12345678';
           const userPayLoad = {
             tenantId: result.id,
             email: email,
@@ -239,7 +240,10 @@ export class CompaniesController extends BaseController {
             this.userService.send({ cmd: 'add_user' }, userPayLoad),
           );
           const emailSent = await firstValueFrom(
-            this.authService.send({ cmd: 'send_email_Confirmation' }, userPayLoad),
+            this.authService.send(
+              { cmd: 'send_email_Confirmation' },
+              userPayLoad,
+            ),
           );
           const officePayload = {
             name: companyName,
