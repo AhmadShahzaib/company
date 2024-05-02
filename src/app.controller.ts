@@ -363,7 +363,7 @@ export class CompaniesController extends BaseController {
       //   query.sort();
       // }
 
-      let total = Object.keys(query).length;
+      let total =await this.companiesService.countDemos(options, queryParams);
       return {
         message: 'Company Found',
         data: query,
