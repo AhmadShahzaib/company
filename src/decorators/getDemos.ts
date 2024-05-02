@@ -10,7 +10,7 @@ import { CompaniesResponse } from 'models';
 export default function GetDemoDecorators() {
   const GetDemoDecorators: Array<CombineDecoratorType> = [
     Get('getDemos'),
-    SetMetadata('permissions', [COMPANIES.GETBYID]),
+    // SetMetadata('permissions', [COMPANIES.GETBYID]),
     ApiBearerAuth('access-token'),
     ApiResponse({ status: HttpStatus.OK, type: CompaniesResponse }),
   ];
