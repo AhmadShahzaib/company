@@ -218,7 +218,7 @@ export class CompaniesController extends BaseController {
             options,
           );
 
-          // --------------- 
+          // ---------------
           const result: CompaniesResponse = new CompaniesResponse(
             await this.companiesService.addCompany(companyRequest),
           );
@@ -257,9 +257,7 @@ export class CompaniesController extends BaseController {
             message: 'Company has been created successfully',
             data: result,
           });
-        }
-        else if (editDemoRequestData.status != 'approved'){
-          
+        } else {
           const updatedDemo = await this.companiesService.updateDemo(
             id,
             editDemoRequestData,
