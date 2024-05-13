@@ -187,7 +187,7 @@ export class CompaniesController extends BaseController {
         const Demo = await this.companiesService.findDemoById(id);
         let companyModel: any = JSON.stringify(Demo);
         companyModel = JSON.parse(companyModel);
-        if (editDemoRequestData.status == 'approved') {
+        if (editDemoRequestData.status == 'active') {
           const {
             state,
             companyName,
@@ -217,6 +217,8 @@ export class CompaniesController extends BaseController {
             companyModel,
             options,
           );
+
+          // --------------- 
           const result: CompaniesResponse = new CompaniesResponse(
             await this.companiesService.addCompany(companyRequest),
           );
