@@ -257,7 +257,7 @@ export class CompaniesController extends BaseController {
             message: 'Company has been created successfully',
             data: result,
           });
-        } else {
+        } else if (editDemoRequestData.status != 'active') {
           const updatedDemo = await this.companiesService.updateDemo(
             id,
             editDemoRequestData,
