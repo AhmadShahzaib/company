@@ -180,9 +180,7 @@ export class CompaniesController extends BaseController {
     );
     try {
       const { id } = editDemoRequestData;
-      const superUser = await firstValueFrom(
-        this.userService.send({ cmd: 'send_email' }, {}),
-      );
+
       if (id) {
         const Demo = await this.companiesService.findDemoById(id);
         let companyModel: any = JSON.stringify(Demo);
@@ -212,6 +210,8 @@ export class CompaniesController extends BaseController {
           };
           //633d27619abbb80ad0ec512a role id
           companyModel.name = name;
+          companyModel.timeZone = companyModel.timeZone.tzCode;
+
           const companyRequest = await addAndUpdate(
             this.companiesService,
             companyModel,
@@ -222,7 +222,10 @@ export class CompaniesController extends BaseController {
           const result: CompaniesResponse = new CompaniesResponse(
             await this.companiesService.addCompany(companyRequest),
           );
-          let password = editDemoRequestData.password;
+
+          let password = editDemoRequestData.password
+            ? editDemoRequestData.password
+            : '12345678';
           const userPayLoad = {
             tenantId: result.id,
             email: email,
@@ -231,13 +234,20 @@ export class CompaniesController extends BaseController {
             firstName: firstName,
             lastName: lastName,
             timeZone: companyModel.timeZone,
+            isVerified: true,
             phoneNumber: phoneNumber,
             role: '633d27619abbb80ad0ec512a',
             deviceId: '62285461da81e8f6edb90775',
           };
-          // const superUser = await firstValueFrom(
-          //   this.authService.send({ cmd: 'add_user' }, userPayLoad),
-          // );
+          const superUser = await firstValueFrom(
+            this.userService.send({ cmd: 'add_user' }, userPayLoad),
+          );
+          const emailSent = await firstValueFrom(
+            this.authService.send(
+              { cmd: 'send_email_Confirmation' },
+              userPayLoad,
+            ),
+          );
           const officePayload = {
             name: companyName,
             address: address,
@@ -247,11 +257,16 @@ export class CompaniesController extends BaseController {
             timeZone: companyModel.timeZone,
             country: country,
             state: state,
+
             city: companyModel.timeZone.tzCode.split('/')[1],
             isActive: true,
           };
           const superOffice = await firstValueFrom(
             this.officeService.send({ cmd: 'office' }, officePayload),
+          );
+          const updatedDemo = await this.companiesService.updateDemo(
+            id,
+            editDemoRequestData,
           );
           response.status(HttpStatus.CREATED).send({
             message: 'Company has been created successfully',
@@ -263,7 +278,7 @@ export class CompaniesController extends BaseController {
             editDemoRequestData,
           );
           response.status(HttpStatus.CREATED).send({
-            message: 'Demo  has been updated successfully',
+            message: 'Inquiry has been updated successfully',
             data: updatedDemo,
           });
         }
@@ -350,7 +365,7 @@ export class CompaniesController extends BaseController {
       //   query.sort();
       // }
 
-      let total = Object.keys(query).length;
+      let total = await this.companiesService.countDemos(options, queryParams);
       return {
         message: 'Company Found',
         data: query,
@@ -423,6 +438,8 @@ export class CompaniesController extends BaseController {
       }
     }
   }
+
+  //not functional
   @AddDecorators()
   async addUsers(@Body() companyModel, @Res() response: Response) {
     try {

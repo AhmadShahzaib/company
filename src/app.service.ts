@@ -180,6 +180,19 @@ updateDemo = async (
       throw error;
     }
   };
+
+
+  countDemos= async (options, queryParams) => {
+    try {
+    const count = await this.demoModel.countDocuments(options);
+    return count;
+  } catch (error) {
+    Logger.log(`Error Logged in findDemo of Company Service`);
+    Logger.error({ message: error.message, stack: error.stack });
+
+    throw error;
+  }
+  }
   findDemoById = async (id) => {
     try {
       return await this.demoModel.findById(id).lean();
