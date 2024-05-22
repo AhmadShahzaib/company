@@ -185,7 +185,7 @@ export class CompaniesController extends BaseController {
         const Demo = await this.companiesService.findDemoById(id);
         let companyModel: any = JSON.stringify(Demo);
         companyModel = JSON.parse(companyModel);
-        if (editDemoRequestData.status == 'approved') {
+        if (editDemoRequestData.status == 'active') {
           const {
             state,
             companyName,
@@ -217,6 +217,8 @@ export class CompaniesController extends BaseController {
             companyModel,
             options,
           );
+
+          // ---------------
           const result: CompaniesResponse = new CompaniesResponse(
             await this.companiesService.addCompany(companyRequest),
           );
@@ -232,7 +234,7 @@ export class CompaniesController extends BaseController {
             firstName: firstName,
             lastName: lastName,
             timeZone: companyModel.timeZone,
-            isVerified:true,
+            isVerified: true,
             phoneNumber: phoneNumber,
             role: '633d27619abbb80ad0ec512a',
             deviceId: '62285461da81e8f6edb90775',
@@ -255,7 +257,7 @@ export class CompaniesController extends BaseController {
             timeZone: companyModel.timeZone,
             country: country,
             state: state,
-            
+
             city: companyModel.timeZone.tzCode.split('/')[1],
             isActive: true,
           };
@@ -270,7 +272,7 @@ export class CompaniesController extends BaseController {
             message: 'Company has been created successfully',
             data: result,
           });
-        } else if (editDemoRequestData.status != 'approved') {
+        } else if (editDemoRequestData.status != 'active') {
           const updatedDemo = await this.companiesService.updateDemo(
             id,
             editDemoRequestData,
@@ -363,7 +365,7 @@ export class CompaniesController extends BaseController {
       //   query.sort();
       // }
 
-      let total =await this.companiesService.countDemos(options, queryParams);
+      let total = await this.companiesService.countDemos(options, queryParams);
       return {
         message: 'Company Found',
         data: query,
