@@ -11,7 +11,7 @@ import {
   NotFoundException,
   Req,
   HttpStatus,
-  UseInterceptors,
+  UseInterceptors,ConflictException,
   Inject,
   Post,
 } from '@nestjs/common';
@@ -75,11 +75,27 @@ export class addController {
         requestModel,
         options,
       );
+
+      // validateUser
+      const userValidate = {
+       
+        email: email,
+        
+        phoneNumber: phoneNumber,
+       
+      };
+      const validated = await firstValueFrom(
+        this.authService.send({ cmd: 'validateUser' }, userValidate),
+      );
+      if(validated ! == "true"){
+        throw new ConflictException(validated);
+      }
       const result = await this.companiesService.addDemo(companyRequest);
       let userPayLoad = { email: email, firstName: firstName };
       const emailSent = await firstValueFrom(
         this.authService.send({ cmd: 'send_email_welcome' }, userPayLoad),
       );
+     
       response.status(HttpStatus.CREATED).send({
         message: 'Demo Request has been created successfully',
         data: result,
