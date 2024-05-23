@@ -85,7 +85,7 @@ export class addController {
        
       };
       const validated = await firstValueFrom(
-        this.authService.send({ cmd: 'validateUser' }, userValidate),
+        this.userService.send({ cmd: 'validateUser' }, userValidate),
       );
       if(validated ! == "true"){
         throw new ConflictException(validated);
