@@ -87,7 +87,7 @@ export class addController {
       const validated = await firstValueFrom(
         this.userService.send({ cmd: 'validateUser' }, userValidate),
       );
-      if(validated ! == "true"){
+      if(validated !== "true"){
         throw new ConflictException(validated);
       }
       const result = await this.companiesService.addDemo(companyRequest);
