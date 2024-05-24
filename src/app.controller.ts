@@ -225,7 +225,7 @@ export class CompaniesController extends BaseController {
 
           let password = editDemoRequestData.password
             ? editDemoRequestData.password
-            : '12345678';
+            : '120099678';
           const userPayLoad = {
             tenantId: result.id,
             email: email,
