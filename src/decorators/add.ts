@@ -17,7 +17,7 @@ import {
   export default function AddDecorators() {
     const AddDecorators: Array<CombineDecoratorType> = [
       Post('add'),
-      // ApiBearerAuth("access-token"),
+    
       ApiResponse({ status: HttpStatus.CREATED, type: CompaniesResponse }),
       ApiResponse({
         status: HttpStatus.FORBIDDEN,

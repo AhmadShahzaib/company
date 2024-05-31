@@ -1,4 +1,5 @@
 import CompanyDocument from 'mongoDb/document/Company.document';
+import DemoDocument from 'mongoDb/document/Demo.document';
 import { Model, Schema, FilterQuery } from 'mongoose';
 import { Injectable, Logger } from '@nestjs/common';
 import { BaseService } from '@shafiqrathore/logeld-tenantbackend-common-future';
@@ -6,7 +7,12 @@ import { InjectModel } from '@nestjs/mongoose';
 import { CompaniesRequest } from './models';
 import AwsClient from './utils/config';
 import { Base64 } from 'aws-sdk/clients/ecr';
+import {
+ 
+  sortableAttributes,
+ 
 
+} from './models';
 
 @Injectable()
 export class CompaniesService extends BaseService<CompanyDocument> {
@@ -16,6 +22,8 @@ export class CompaniesService extends BaseService<CompanyDocument> {
   constructor(
     @InjectModel('Companies')
     private readonly companyModel: Model<CompanyDocument>,
+    @InjectModel('Demo')
+    private readonly demoModel: Model<DemoDocument>,
     private readonly awsClient: AwsClient,
 
   ) {
@@ -52,6 +60,49 @@ export class CompaniesService extends BaseService<CompanyDocument> {
     }
   };
 
+
+  findOneDemo = async (option:FilterQuery<DemoDocument>): Promise<DemoDocument> => {
+    try {
+      const res= await this.demoModel.findOne(option);
+      return res;
+    } catch (error) {
+      Logger.error(error.message, error.stack);
+      throw error
+    }
+  };
+//
+updateDemo = async (
+  id: string,
+  editCompanyRequestData,
+): Promise<DemoDocument> => {
+  try {
+    return await this.demoModel.findByIdAndUpdate(
+      id,
+      editCompanyRequestData,
+      {
+        new: true,
+      },
+    );
+  } catch (error) {
+    Logger.log('Error logged in update demo of Company service');
+    Logger.error({ message: error.message, stack: error.stack });
+    Logger.log({ id, editCompanyRequestData });
+    throw error;
+  }
+};
+//
+  //
+  //
+  addDemo = async (
+    data,
+  ): Promise<DemoDocument> => {
+    try {
+      return await this.demoModel.create(data);
+    } catch (error) {
+      Logger.error(error.message, error.stack);
+      throw error;
+    }
+  };
   ////
   //
   async uploadFile(fileBuffer: Base64, fileName: string, contentType: string) {
@@ -105,7 +156,53 @@ export class CompaniesService extends BaseService<CompanyDocument> {
       throw error;
     }
   };
+  getDemos = async (options, queryParams): Promise<DemoDocument[]> => {
+    try {
+      const { search, orderBy, orderType, pageNo, limit } = queryParams;
+  
+      let query = this.demoModel.find(options);
+  
+      // Apply sorting if orderBy is provided
+      // if (orderBy && sortableAttributes.includes(orderBy)) {
+      //   query.sort(orderBy);
+      // }
+  
+      // Apply pagination
+      if (!limit || !isNaN(limit)) {
+        query = query.skip(((pageNo ?? 1) - 1) * (limit ?? 10)).limit(limit ?? 10);
+      }
+  
+      return query;
+    } catch (error) {
+      Logger.log(`Error Logged in findDemo of Company Service`);
+      Logger.error({ message: error.message, stack: error.stack });
+  
+      throw error;
+    }
+  };
 
+
+  countDemos= async (options, queryParams) => {
+    try {
+    const count = await this.demoModel.countDocuments(options);
+    return count;
+  } catch (error) {
+    Logger.log(`Error Logged in findDemo of Company Service`);
+    Logger.error({ message: error.message, stack: error.stack });
+
+    throw error;
+  }
+  }
+  findDemoById = async (id) => {
+    try {
+      return await this.demoModel.findById(id).lean();
+    } catch (error) {
+      Logger.log(`Error Logged in findDemoById of Company Service`);
+      Logger.error({ message: error.message, stack: error.stack });
+      Logger.log({ id });
+      throw error;
+    }
+  };
   findCompanyById = async (id) => {
     try {
       return await this.companyModel.findById(id, { isDeleted: false });
