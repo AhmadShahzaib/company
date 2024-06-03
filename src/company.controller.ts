@@ -69,14 +69,6 @@ export class addController {
         ],
       };
       //633d27619abbb80ad0ec512a role id
-      requestModel.name = name;
-      const companyRequest = await validateDemo(
-        this.companiesService,
-        requestModel,
-        options,
-      );
-
-      // validateUser
       const userValidate = {
        
         email: email,
@@ -90,6 +82,16 @@ export class addController {
       if(validated !== "true"){
         throw new ConflictException(validated);
       }
+      requestModel.name = name;
+      const companyRequest = await validateDemo(
+        this.companiesService,
+        requestModel,
+        options,
+      );
+
+      // validateUser
+     
+     
       const result = await this.companiesService.addDemo(companyRequest);
       let userPayLoad = { email: email, firstName: firstName };
       const emailSent = await firstValueFrom(
