@@ -73,7 +73,7 @@ export class addController {
        
         email: email,
         
-        phoneNumber: phoneNumber,
+        phoneNumber: "",
        
       };
       const validated = await firstValueFrom(
