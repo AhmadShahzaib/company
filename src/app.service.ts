@@ -111,7 +111,7 @@ updateDemo = async (
       //   Logger.error('Bucket does not exists!');
       //   throw new BadRequestException('Bucket does not exists!');
       // }
-      let response = await this.awsClient.s3Client
+      const response = await this.awsClient.s3Client
         .upload({
           Bucket: this.bucket,
           Body: fileBuffer,

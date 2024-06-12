@@ -10,7 +10,7 @@ export const getDocuments = async (
   if (company?.companyProfile?.key) {
     let newcompany: any = JSON.stringify(company);
     newcompany = JSON.parse(newcompany);
-    let url = await appService.getObject(newcompany.companyProfile.key);
+    const url = await appService.getObject(newcompany.companyProfile.key);
     newcompany.companyProfile.imagePath = `data:image/${newcompany.companyProfile.name
       .split('.')
       .pop()};base64,${url.replace(/\s+/g, '')}`;
