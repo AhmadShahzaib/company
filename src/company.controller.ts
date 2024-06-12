@@ -68,7 +68,7 @@ export class addController {
           { phoneNumber: { $regex: new RegExp(`^${phoneNumber}`, 'i') } },
         ],
       };
-      //633d27619abbb80ad0ec512a role id
+      //633d27619abbb80ad0ec512a role id for superadmin
       const userValidate = {
        
         email: email,
