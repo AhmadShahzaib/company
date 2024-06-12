@@ -60,7 +60,7 @@ export class addController {
       } = requestModel;
       let name = companyName;
       const options: FilterQuery<DemoDocument> = {
-        $and: [{ isDeleted: false }],
+        $and: [{ isDeleted: false },{status: { $ne: "rejected" }}],
         $or: [
           { name: { $regex: new RegExp(`^${name}`, 'i') } },
           { email: { $regex: new RegExp(`^${email}`, 'i') } },
