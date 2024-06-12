@@ -15,12 +15,12 @@ export default interface DemoDocument extends Document {
   userDetails : {};
   status: string;
   comments?:  string;
-  firstName: { type: String, required: true },
-  lastName: { type: String, required: true },
+  firstName: { type: string, required: true },
+  lastName: { type: string, required: true },
  
-  companyName: { type: String, required: true },
-  state?: { type: String },
-  country: { type: String, required: true },
+  companyName: { type: string, required: true },
+  state?: { type: string },
+  country: { type: string, required: true },
   documents?: Documents[];
   timeZone: {
     id: number;

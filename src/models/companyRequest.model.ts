@@ -21,7 +21,7 @@ export class CompaniesRequest {
   })
   @IsNotEmpty()
   @IsString()
-  timeZone?: TimeZone | String;
+  timeZone?: TimeZone | string;
 
   @ApiProperty()
   @IsOptional()

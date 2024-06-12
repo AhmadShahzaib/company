@@ -58,7 +58,7 @@ export class addController {
         usdot,
         phoneNumber,
       } = requestModel;
-      let name = companyName;
+      const name = companyName;
       const options: FilterQuery<DemoDocument> = {
         $and: [{ isDeleted: false }],
         $or: [
@@ -93,7 +93,7 @@ export class addController {
      
      
       const result = await this.companiesService.addDemo(companyRequest);
-      let userPayLoad = { email: email, firstName: firstName };
+      const userPayLoad = { email: email, firstName: firstName };
       const emailSent = await firstValueFrom(
         this.authService.send({ cmd: 'send_email_welcome' }, userPayLoad),
       );
@@ -128,7 +128,7 @@ export class addController {
         usdot,
         phoneNumber,
       } = companyModel;
-      let name = companyName;
+      const name = companyName;
       const options: FilterQuery<CompanyDocument> = {
         $and: [{ isDeleted: false }],
         $or: [
