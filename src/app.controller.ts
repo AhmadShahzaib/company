@@ -120,7 +120,7 @@ export class CompaniesController extends BaseController {
           ],
         };
 
-        let requestModel = await uploadDocument(
+        const requestModel = await uploadDocument(
           files?.userDocument,
           files?.profile,
           this.companiesService,
@@ -137,7 +137,7 @@ export class CompaniesController extends BaseController {
           id,
           companyRequest,
         );
-        let result: CompaniesResponse = await getDocuments(
+        const result: CompaniesResponse = await getDocuments(
           updatedCompany,
           this.companiesService,
         );
@@ -153,7 +153,7 @@ export class CompaniesController extends BaseController {
           throw new NotFoundException(`${id} does not exist`);
         }
       } else {
-        throw new NotFoundException(`Id not found in token.`);
+        throw new NotFoundException('Id not found in token.');
       }
     } catch (error) {
       if (error instanceof HttpException) {
@@ -198,7 +198,7 @@ export class CompaniesController extends BaseController {
             usdot,
             phoneNumber,
           } = companyModel;
-          let name = companyName;
+          const name = companyName;
           const options: FilterQuery<DemoDocument> = {
             $and: [{ isDeleted: false }],
             $or: [
@@ -223,7 +223,7 @@ export class CompaniesController extends BaseController {
             await this.companiesService.addCompany(companyRequest),
           );
 
-          let password = editDemoRequestData.password
+          const password = editDemoRequestData.password
             ? editDemoRequestData.password
             : '120099678';
           const userPayLoad = {
@@ -306,7 +306,7 @@ export class CompaniesController extends BaseController {
         const company = await this.companiesService.findCompanyById(id);
         if (company) {
           const companyResp: CompaniesResponse = new CompaniesResponse(company);
-          let result: CompaniesResponse = await getDocuments(
+          const result: CompaniesResponse = await getDocuments(
             companyResp,
             this.companiesService,
           );
@@ -319,7 +319,7 @@ export class CompaniesController extends BaseController {
           throw new NotFoundException(`No company found with the id ${id}`);
         }
       } else {
-        throw new NotFoundException(`No tenant Id found.`);
+        throw new NotFoundException('No tenant Id found.');
       }
     } catch (error) {
       if (error instanceof HttpException) {
@@ -342,7 +342,7 @@ export class CompaniesController extends BaseController {
         request.originalUrl
       } by: ${request.user ?? 'Unauthorized User'}`,
     );
-    let { search, orderBy, orderType, pageNo, limit } = queryParams;
+    const { search, orderBy, orderType, pageNo, limit } = queryParams;
     const { tenantId: id } = request.user ?? ({ tenantId: undefined } as any);
     try {
       const options: FilterQuery<DemoDocument> = {};
@@ -365,7 +365,7 @@ export class CompaniesController extends BaseController {
       //   query.sort();
       // }
 
-      let total = await this.companiesService.countDemos(options, queryParams);
+      const total = await this.companiesService.countDemos(options, queryParams);
       return {
         message: 'Company Found',
         data: query,
@@ -404,7 +404,7 @@ export class CompaniesController extends BaseController {
         usdot,
         phoneNumber,
       } = requestModel;
-      let name = companyName;
+      const name = companyName;
       const options: FilterQuery<DemoDocument> = {
         $and: [{ isDeleted: false }],
         $or: [
@@ -455,7 +455,7 @@ export class CompaniesController extends BaseController {
         usdot,
         phoneNumber,
       } = companyModel;
-      let name = companyName;
+      const name = companyName;
       const options: FilterQuery<DemoDocument> = {
         $and: [{ isDeleted: false }],
         $or: [

@@ -1,10 +1,8 @@
-import { AwsService } from '@shafiqrathore/logeld-tenantbackend-common-future';
-import { CompaniesRequest, CompaniesResponse } from '../models';
+import { CompaniesRequest } from '../models';
 
 import { CompaniesService } from '../app.service';
 
 import moment from 'moment';
-import { Logger } from '@nestjs/common';
 
 export const uploadDocument = async (
   doc: any,
@@ -16,7 +14,7 @@ export const uploadDocument = async (
   if (doc && doc.length > 0) {
     companyModel.documents = [];
     doc?.forEach(async (item) => {
-      let key = await appService.uploadFile(
+      const key = await appService.uploadFile(
         item?.buffer,
         `${tenantId}/${companyModel.email}/companyDocuments/${moment().unix()}-${
           item?.originalname
@@ -33,7 +31,7 @@ export const uploadDocument = async (
   if (profile) {
     // Logger.log(`Validation completed with no errors or conflicts.`);
 
-    let keyProfile = await appService.uploadFile(
+    const keyProfile = await appService.uploadFile(
       profile[0]?.buffer,
       `${tenantId}/${companyModel.email}/companyDocuments/${moment().unix()}-${
         profile[0]?.originalname

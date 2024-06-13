@@ -58,9 +58,9 @@ export class addController {
         usdot,
         phoneNumber,
       } = requestModel;
-      let name = companyName;
+      const name = companyName;
       const options: FilterQuery<DemoDocument> = {
-        $and: [{ isDeleted: false }],
+        $and: [{ isDeleted: false },{status: { $ne: 'rejected' }}],
         $or: [
           { name: { $regex: new RegExp(`^${name}`, 'i') } },
           { email: { $regex: new RegExp(`^${email}`, 'i') } },
@@ -68,18 +68,18 @@ export class addController {
           { phoneNumber: { $regex: new RegExp(`^${phoneNumber}`, 'i') } },
         ],
       };
-      //633d27619abbb80ad0ec512a role id
+      //633d27619abbb80ad0ec512a role id for superadmin
       const userValidate = {
        
         email: email,
         
-        phoneNumber: "",
+        phoneNumber: '',
        
       };
       const validated = await firstValueFrom(
         this.userService.send({ cmd: 'validateUser' }, userValidate),
       );
-      if(validated !== "true"){
+      if(validated !== 'true'){
         throw new ConflictException(validated);
       }
       requestModel.name = name;
@@ -93,7 +93,7 @@ export class addController {
      
      
       const result = await this.companiesService.addDemo(companyRequest);
-      let userPayLoad = { email: email, firstName: firstName };
+      const userPayLoad = { email: email, firstName: firstName };
       const emailSent = await firstValueFrom(
         this.authService.send({ cmd: 'send_email_welcome' }, userPayLoad),
       );
@@ -108,7 +108,7 @@ export class addController {
       } else {
         Logger.log('Error Logged in addCompany of Company Controller');
         Logger.error(error.message, error.stack);
-        Logger.log(requestModel);
+        Logger.log(requestModel);//add new branch
         throw new InternalServerErrorException('Error while creating company');
       }
     }
@@ -128,7 +128,7 @@ export class addController {
         usdot,
         phoneNumber,
       } = companyModel;
-      let name = companyName;
+      const name = companyName;
       const options: FilterQuery<CompanyDocument> = {
         $and: [{ isDeleted: false }],
         $or: [
