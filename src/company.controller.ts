@@ -60,7 +60,7 @@ export class addController {
       } = requestModel;
       const name = companyName;
       const options: FilterQuery<DemoDocument> = {
-        $and: [{ isDeleted: false }],
+        $and: [{ isDeleted: false },{status: { $ne: "rejected" }}],
         $or: [
           { name: { $regex: new RegExp(`^${name}`, 'i') } },
           { email: { $regex: new RegExp(`^${email}`, 'i') } },
@@ -68,7 +68,7 @@ export class addController {
           { phoneNumber: { $regex: new RegExp(`^${phoneNumber}`, 'i') } },
         ],
       };
-      //633d27619abbb80ad0ec512a role id
+      //633d27619abbb80ad0ec512a role id for superadmin
       const userValidate = {
        
         email: email,
@@ -108,7 +108,7 @@ export class addController {
       } else {
         Logger.log('Error Logged in addCompany of Company Controller');
         Logger.error(error.message, error.stack);
-        Logger.log(requestModel);
+        Logger.log(requestModel);//add new branch
         throw new InternalServerErrorException('Error while creating company');
       }
     }
