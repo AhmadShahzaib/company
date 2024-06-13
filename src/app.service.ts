@@ -134,8 +134,8 @@ updateDemo = async (
         Key: objectKey,
       };
       const data = await this.awsClient.s3Client.getObject(params).promise();
-      console.log(`Data =========================== `, data);
-      console.log(`Data Body =========================== `, data.Body);
+      console.log('Data =========================== ', data);
+      console.log('Data Body =========================== ', data.Body);
 
       return Buffer.from(data.Body).toString('base64');
     } catch (err) {
@@ -174,7 +174,7 @@ updateDemo = async (
   
       return query;
     } catch (error) {
-      Logger.log(`Error Logged in findDemo of Company Service`);
+      Logger.log('Error Logged in findDemo of Company Service');
       Logger.error({ message: error.message, stack: error.stack });
   
       throw error;
@@ -187,7 +187,7 @@ updateDemo = async (
     const count = await this.demoModel.countDocuments(options);
     return count;
   } catch (error) {
-    Logger.log(`Error Logged in findDemo of Company Service`);
+    Logger.log('Error Logged in findDemo of Company Service');
     Logger.error({ message: error.message, stack: error.stack });
 
     throw error;
@@ -197,7 +197,7 @@ updateDemo = async (
     try {
       return await this.demoModel.findById(id).lean();
     } catch (error) {
-      Logger.log(`Error Logged in findDemoById of Company Service`);
+      Logger.log('Error Logged in findDemoById of Company Service');
       Logger.error({ message: error.message, stack: error.stack });
       Logger.log({ id });
       throw error;
@@ -207,7 +207,7 @@ updateDemo = async (
     try {
       return await this.companyModel.findById(id, { isDeleted: false });
     } catch (error) {
-      Logger.log(`Error Logged in findCompanyById of Company Service`);
+      Logger.log('Error Logged in findCompanyById of Company Service');
       Logger.error({ message: error.message, stack: error.stack });
       Logger.log({ id });
       throw error;

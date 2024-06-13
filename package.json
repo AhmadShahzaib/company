@@ -10,9 +10,9 @@
     "start:debug": "nodemon --config nodemon-debug.json",
     "prestart:prod": "rimraf dist && tsc",
     "start:prod": "node dist/main.js",
-    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+   
     "start:hmr": "node dist/server",
-    "lint": "eslint src --report-unused-disable-directives --fix --max-warnings 0",
+    "lint": "eslint . ",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",

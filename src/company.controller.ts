@@ -60,7 +60,7 @@ export class addController {
       } = requestModel;
       const name = companyName;
       const options: FilterQuery<DemoDocument> = {
-        $and: [{ isDeleted: false },{status: { $ne: "rejected" }}],
+        $and: [{ isDeleted: false },{status: { $ne: 'rejected' }}],
         $or: [
           { name: { $regex: new RegExp(`^${name}`, 'i') } },
           { email: { $regex: new RegExp(`^${email}`, 'i') } },
@@ -73,13 +73,13 @@ export class addController {
        
         email: email,
         
-        phoneNumber: "",
+        phoneNumber: '',
        
       };
       const validated = await firstValueFrom(
         this.userService.send({ cmd: 'validateUser' }, userValidate),
       );
-      if(validated !== "true"){
+      if(validated !== 'true'){
         throw new ConflictException(validated);
       }
       requestModel.name = name;

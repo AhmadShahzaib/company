@@ -1,10 +1,8 @@
-import { AwsService } from '@shafiqrathore/logeld-tenantbackend-common-future';
-import { CompaniesRequest, CompaniesResponse } from '../models';
+import { CompaniesRequest } from '../models';
 
 import { CompaniesService } from '../app.service';
 
 import moment from 'moment';
-import { Logger } from '@nestjs/common';
 
 export const uploadDocument = async (
   doc: any,

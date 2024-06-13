@@ -13,20 +13,20 @@ export const addAndUpdate = async (
   try {
     const company = await companyService.findOne(option);
     if (company?.email.toLowerCase() == requestModel.email.toLowerCase()) {
-      Logger.log(`Email already exists`);
-      throw new ConflictException(`Email already exists`);
+      Logger.log('Email already exists');
+      throw new ConflictException('Email already exists');
     }
     if (company?.name.toLowerCase() == requestModel.name.toLowerCase()) {
-      Logger.log(`Company name already exists`);
-      throw new ConflictException(`Company name already exists`);
+      Logger.log('Company name already exists');
+      throw new ConflictException('Company name already exists');
     }
     if (company?.phoneNumber == requestModel.phoneNumber) {
       Logger.log(`${requestModel.phoneNumber} Phone number already exists`);
-      throw new ConflictException(`Phone number already exists`);
+      throw new ConflictException('Phone number already exists');
     }
     if (company?.usdot == requestModel.usdot) {
-      Logger.log(`Usdot already exists`);
-      throw new ConflictException(`Usdot already exists`);
+      Logger.log('Usdot already exists');
+      throw new ConflictException('Usdot already exists');
     }
     const index = timezones.findIndex((ele) => {
       return ele.tzCode === (requestModel.timeZone as string);
@@ -34,7 +34,7 @@ export const addAndUpdate = async (
     if (index >= 0) {
       requestModel.timeZone = timezones[index];
     } else {
-      throw new NotFoundException(`TimeZone you select does not exist`);
+      throw new NotFoundException('TimeZone you select does not exist');
     }
     return requestModel;
   } catch (err) {
