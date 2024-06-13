@@ -153,7 +153,7 @@ export class CompaniesController extends BaseController {
           throw new NotFoundException(`${id} does not exist`);
         }
       } else {
-        throw new NotFoundException(`Id not found in token.`);
+        throw new NotFoundException('Id not found in token.');
       }
     } catch (error) {
       if (error instanceof HttpException) {
@@ -319,7 +319,7 @@ export class CompaniesController extends BaseController {
           throw new NotFoundException(`No company found with the id ${id}`);
         }
       } else {
-        throw new NotFoundException(`No tenant Id found.`);
+        throw new NotFoundException('No tenant Id found.');
       }
     } catch (error) {
       if (error instanceof HttpException) {

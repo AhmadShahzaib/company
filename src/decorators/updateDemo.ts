@@ -10,7 +10,7 @@ import { CompaniesResponse } from '../models';
 export default function EditDemoDecorators() {
   const EditDemoDecorators: Array<CombineDecoratorType> = [
     Put('demo'),
-    SetMetadata('permissions', ["f04ag597"]),
+    SetMetadata('permissions', ['f04ag597']),
     ApiBearerAuth('access-token'),
     ApiResponse({ status: HttpStatus.OK, type: CompaniesResponse }),
   ];
