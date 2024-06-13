@@ -108,7 +108,7 @@ export class addController {
       } else {
         Logger.log('Error Logged in addCompany of Company Controller');
         Logger.error(error.message, error.stack);
-        Logger.log(requestModel);
+        Logger.log(requestModel);//add new branch
         throw new InternalServerErrorException('Error while creating company');
       }
     }
